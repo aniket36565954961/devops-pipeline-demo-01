@@ -2,38 +2,27 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "yourdockerhub/devops-demo"
+        DOCKER_IMAGE = "aniket3003/devops-demo"
     }
 
     stages {
 
-        stage('Clone Code') {
+        stage('Clone Repo') {
             steps {
-                git 'https://github.com/yourusername/devops-cicd-demo.git'
+                git 'https://github.com/aniket36565954961/devops-pipeline-demo-01.git'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME:latest .'
+                bat 'docker build -t %DOCKER_IMAGE% .'
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Push Image') {
             steps {
-                withCredentials([string(credentialsId: 'dockerhub-pass', variable: 'PASS')]) {
-                    sh 'docker login -u yourdockerhub -p $PASS'
-                    sh 'docker push $IMAGE_NAME:latest'
-                }
+                bat 'docker push %DOCKER_IMAGE%'
             }
         }
-
-        stage('Deploy to Kubernetes') {
-            steps {
-                sh 'kubectl apply -f k8s/deployment.yaml'
-                sh 'kubectl apply -f k8s/service.yaml'
-            }
-        }
-
     }
 }
